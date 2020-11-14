@@ -13,6 +13,7 @@ gym = "*"
 ipython = "*"
 matplotlib = "*"
 pandas = "*"
+plotly = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
