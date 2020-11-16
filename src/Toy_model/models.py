@@ -33,7 +33,7 @@ class FreeEnergyBarrier(gym.Env):
         m = np.linspace(0, 1, x)
         n = np.linspace(0, 1, y)
         grid_x, grid_y = np.meshgrid(m, n)
-        points = np.random.rand(x * y, 2)
+        points = np.random.rand(x * y * 10, 2)
         values = self.gridFunction(points[:, 0], points[:, 1])
         grid = pd.DataFrame(griddata(points, values, (grid_x.T, grid_y.T), method='cubic'))
         return grid

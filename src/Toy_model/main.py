@@ -27,6 +27,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def maxAction(Q, state, actions):
     values = np.array([Q[(state[0], state[1]), a] for a in actions])
     action = np.argmin(values)
+    print("values: ", values)
+    print("Action: ", action)
     return actions[action]
 
 if __name__ == '__main__':
@@ -34,7 +36,7 @@ if __name__ == '__main__':
     y = 200
     env = FreeEnergyBarrier(x, y)
     # model hyperparameters
-    ALPHA = 0.01 # Learning Rate
+    ALPHA = 0.1 # Learning Rate
     GAMMA = 0.5 # Count all future rewards equally
     EPS = 1.0  # Epsilon greedy action selection
 
@@ -44,7 +46,7 @@ if __name__ == '__main__':
             for action in env.possibleActions:
                 Q[(state, i), action] = 0
 
-    numGames = 5
+    numGames = 10
     totalRewards = np.zeros(numGames)
     env.render()
     df = pd.DataFrame()
@@ -56,7 +58,7 @@ if __name__ == '__main__':
         t = 0
         dt = .01
         run = []
-        while t < 2:
+        while t < 500:
             rand = np.random.random()
             action = maxAction(Q, observation, env.possibleActions) if rand < (1-EPS) else env.actionSpaceSample()
             observation_, reward, done, info = env.step(action)
