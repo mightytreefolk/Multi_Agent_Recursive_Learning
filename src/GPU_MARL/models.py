@@ -65,7 +65,7 @@ class Agent():
     def choose_action(self, observation):
         if np.random.random() > self.epsilon:
             state = T.tensor([observation]).to(self.Q_eval.device)
-            actions = self.Q_eval.forward(state)
+            actions = self.Q_eval.forward(state.float())
             action = T.argmax(actions).item()
         else:
             action = np.random.choice(self.action_space)
@@ -86,7 +86,7 @@ class Agent():
         state_batch = T.tensor(self.state_memory[batch]).to(self.Q_eval.device)
         new_state_batch = T.tensor(self.new_state_memory[batch]).to(self.Q_eval.device)
         reward_batch = T.tensor(self.reward_memory[batch]).to(self.Q_eval.device)
-        terminal_batch = T.tensor(self.terminal_memory[batch].to(self.Q_eval.device))
+        terminal_batch = T.tensor(self.terminal_memory[batch]).to(self.Q_eval.device)
 
         action_batch = self.action_memory[batch]
 
@@ -170,7 +170,7 @@ class FreeEnergyBarrier(gym.Env):
         if not self.offGridMove(resultingState, self.agentPosition):
             self.setState(resultingState)
             if self.grid[resultingState[0]][resultingState[1]] < 0:
-                reward = 1
+                reward = -1
             elif self.isTerminalState():
                 reward = 100
             elif self.grid[resultingState[0]][resultingState[1]] > 0:
@@ -181,13 +181,13 @@ class FreeEnergyBarrier(gym.Env):
         else:
             self.setState(self.agentPosition)
             if self.grid[self.agentPosition[0]][self.agentPosition[1]] < 0:
-                reward = 0
+                reward = -1
             elif self.isTerminalState():
                 reward = 100
             elif self.grid[self.agentPosition[0]][self.agentPosition[1]] > 0:
                 reward = -1
             else:
-                reward = 0
+                reward = -1
             return self.agentPosition, reward, self.isTerminalState(), {}
 
     def actionSpaceSample(self):

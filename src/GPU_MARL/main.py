@@ -7,16 +7,18 @@ import os
 from models import FreeEnergyBarrier, Agent
 
 if __name__ == '__main__':
+    X = 200
+    Y = 200
     LR = 0.001
     GAMMA = 0.99
-    BATCH_SIZE = 64
+    BATCH_SIZE = 100000
     NUMBER_OF_ACTIONS = 4
     EPSILON = 1.0
-    env = FreeEnergyBarrier(200, 200)
+    env = FreeEnergyBarrier(X, Y)
     agent = Agent(gamma=GAMMA, epsilon=EPSILON, batch_size=BATCH_SIZE,
                   n_actions=NUMBER_OF_ACTIONS, eps_end=0.01, input_dims=[2], lr=LR)
     scores, eps_history = [], []
-    n_runs = 25
+    n_runs = 10
     df = pd.DataFrame()
     for i in range(n_runs):
         score = 0
@@ -26,6 +28,7 @@ if __name__ == '__main__':
         while not done:
             action = agent.choose_action(observation)
             observation_, reward, done, info = env.step(action)
+            print(observation)
             score += reward
             agent.store_transition(observation, action, reward, observation_, done)
 
@@ -54,5 +57,5 @@ if __name__ == '__main__':
     path = os.path.join(directory, "Run.csv")
     grid_path = os.path.join(directory, "Grid.csv")
     df.to_csv(path, index=False, encoding='utf-8', sep='\t',)
-    grid = env.makeGrid(200, 200)
+    grid = env.makeGrid(X, Y)
     grid.to_csv(grid_path, index=False, encoding='utf-8', sep='\t',)
