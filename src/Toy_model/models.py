@@ -3,12 +3,6 @@ from random import randrange
 import gym
 from scipy.interpolate import griddata
 import pandas as pd
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from collections import namedtuple
-from gym import error, spaces, utils
-from gym.utils import seeding
 
 
 class FreeEnergyBarrier(gym.Env):
@@ -29,6 +23,12 @@ class FreeEnergyBarrier(gym.Env):
     def gridFunction(self, x, y):
         return x * (1 - x) * np.cos(4 * np.pi * x) * np.sin(4 * np.pi * y ** 2) ** 2
 
+    def isTerminalState(self):
+        if self.agentPosition[0] == 152 and self.agentPosition[1] == 68:
+            return True
+        else:
+            return False
+
     def makeGrid(self, x, y):
         m = np.linspace(0, 1, x)
         n = np.linspace(0, 1, y)
@@ -44,7 +44,7 @@ class FreeEnergyBarrier(gym.Env):
             return True
         elif newState[0] < 0 or newState[1] < 0:
             return True
-        elif newState[0] >= self.m or newState[1] >= self.n:
+        elif newState[0] >= 200 or newState[1] >= 200:
             return True
         else:
             return False
@@ -62,13 +62,27 @@ class FreeEnergyBarrier(gym.Env):
             resultingState.append(i+j)
         # resultingState = np.array(resultingState)
         if not self.offGridMove(resultingState, self.agentPosition):
-            reward = self.grid[resultingState[0]][resultingState[1]]
             self.setState(resultingState)
-            return resultingState, reward, None, {}
+            if self.grid[resultingState[0]][resultingState[1]] < 0:
+                reward = 1
+            elif self.isTerminalState():
+                reward = 100
+            elif self.grid[resultingState[0]][resultingState[1]] > 0:
+                reward = -1
+            else:
+                reward = -1
+            return resultingState, reward, self.isTerminalState(), {}
         else:
-            reward = self.grid[self.agentPosition[0]][self.agentPosition[1]]
             self.setState(self.agentPosition)
-            return self.agentPosition, reward, None, {}
+            if self.grid[self.agentPosition[0]][self.agentPosition[1]] < 0:
+                reward = 0
+            elif self.isTerminalState():
+                reward = 100
+            elif self.grid[self.agentPosition[0]][self.agentPosition[1]] > 0:
+                reward = -1
+            else:
+                reward = 0
+            return self.agentPosition, reward, self.isTerminalState(), {}
 
     def actionSpaceSample(self):
         return np.random.choice(self.possibleActions)
@@ -85,41 +99,3 @@ class FreeEnergyBarrier(gym.Env):
         if self.viewer:
             self.viewer.close()
             self.viewer = None
-
-
-class QNetwork(nn.Module):
-    """ Actor (Policy) Model."""
-
-    def __init__(self, state_size, action_size, seed, fc1_unit=64, fc2_unit=64):
-        """
-        Initialize parameters and build model.
-        Params
-        =======
-            state_size (int): Dimension of each state
-            action_size (int): Dimension of each action
-            seed (int): Random seed
-            fc1_unit (int): Number of nodes in first hidden layer
-            fc2_unit (int): Number of nodes in second hidden layer
-        """
-        super(QNetwork, self).__init__()  ## calls __init__ method of nn.Module class
-        self.seed = torch.manual_seed(seed)
-        self.fc1 = nn.Linear(state_size, fc1_unit)
-        self.fc2 = nn.Linear(fc1_unit, fc2_unit)
-        self.fc3 = nn.Linear(fc2_unit, action_size)
-
-    def forward(self, x):
-        # x = state
-        """
-        Build a network that maps state -> action values.
-        """
-        print("X")
-        print(x)
-        print("FC1")
-        print(self.fc1(x))
-        print("FC2")
-        print(self.fc2(x))
-        print("FC3")
-        print(self.fc3(x))
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        return self.fc3(x)

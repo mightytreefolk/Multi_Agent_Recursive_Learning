@@ -1,34 +1,16 @@
-import gym
-import math
-import random
 import numpy as np
 import pandas as pd
 import uuid
 from datetime import datetime
 import os
-import matplotlib
 import matplotlib.pyplot as plt
-from itertools import count
-from PIL import Image
-
-import torch
-from models import FreeEnergyBarrier, QNetwork
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torchvision.transforms as T
-from collections import namedtuple, deque
-
-
-# if gpu is to be used
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+from models import FreeEnergyBarrier
 
 
 def maxAction(Q, state, actions):
     values = np.array([Q[(state[0], state[1]), a] for a in actions])
-    action = np.argmin(values)
-    print("values: ", values)
-    print("Action: ", action)
+    action = np.argmax(values)
+    print(actions[action])
     return actions[action]
 
 if __name__ == '__main__':
@@ -37,7 +19,7 @@ if __name__ == '__main__':
     env = FreeEnergyBarrier(x, y)
     # model hyperparameters
     ALPHA = 0.1 # Learning Rate
-    GAMMA = 0.5 # Count all future rewards equally
+    GAMMA = 0.9 # discount factor
     EPS = 1.0  # Epsilon greedy action selection
 
     Q = {}
@@ -46,7 +28,7 @@ if __name__ == '__main__':
             for action in env.possibleActions:
                 Q[(state, i), action] = 0
 
-    numGames = 10
+    numGames = 5
     totalRewards = np.zeros(numGames)
     env.render()
     df = pd.DataFrame()
@@ -58,7 +40,7 @@ if __name__ == '__main__':
         t = 0
         dt = .01
         run = []
-        while t < 500:
+        while not done:
             rand = np.random.random()
             action = maxAction(Q, observation, env.possibleActions) if rand < (1-EPS) else env.actionSpaceSample()
             observation_, reward, done, info = env.step(action)

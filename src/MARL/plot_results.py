@@ -9,10 +9,12 @@ def plot_run(dir):
     df = pd.read_csv(path, sep='\t')
     return df
 
+
 def plot_grid(dir):
     path = os.path.join(dir, "Grid.csv")
     df = pd.read_csv(path, sep='\t')
     return df.T
+
 
 def main():
     print("What directory would you like to explore?")
