@@ -124,7 +124,7 @@ class FreeEnergyBarrier(gym.Env):
         """
         self.actionSpace = {0: [1, 0], 1: [-1, 0], 2: [0, 1], 3: [0, -1]}
         self.possibleActions = [0, 1, 2, 3]
-        self.agentPosition = np.array([randrange(self.m), randrange(self.n)])
+        self.agentPosition = np.array([1, 1])
         self.viewer = None
 
     def gridFunction(self, x, y):
@@ -132,7 +132,6 @@ class FreeEnergyBarrier(gym.Env):
 
     def isTerminalState(self):
         if self.agentPosition[0] == 152 and self.agentPosition[1] == 68:
-            print("Terminal State Value: ", self.grid[self.agentPosition[0]][self.agentPosition[1]])
             return True
         else:
             return False
@@ -171,9 +170,9 @@ class FreeEnergyBarrier(gym.Env):
         if not self.offGridMove(resultingState, self.agentPosition):
             self.setState(resultingState)
             if self.grid[resultingState[0]][resultingState[1]] < 0:
-                reward = -1 * self.grid[self.agentPosition[0]][self.agentPosition[1]]
+                reward = -1 * self.grid[resultingState[0]][resultingState[1]]
             elif self.isTerminalState():
-                reward = 100
+                reward = 0
             elif self.grid[resultingState[0]][resultingState[1]] > 0:
                 reward = -1 * self.grid[resultingState[0]][resultingState[1]]
             else:
@@ -182,9 +181,9 @@ class FreeEnergyBarrier(gym.Env):
         else:
             self.setState(self.agentPosition)
             if self.grid[self.agentPosition[0]][self.agentPosition[1]] < 0:
-                reward = -1 * self.grid[self.agentPosition[0]][self.agentPosition[1]]
+                reward = -1
             elif self.isTerminalState():
-                reward = 100
+                reward = 0
             elif self.grid[self.agentPosition[0]][self.agentPosition[1]] > 0:
                 reward = -1 * self.grid[resultingState[0]][resultingState[1]]
             else:
@@ -196,7 +195,7 @@ class FreeEnergyBarrier(gym.Env):
 
     def reset(self):
         self.grid = self.makeGrid(self.m, self.n)
-        self.agentPosition = np.array([randrange(self.m), randrange(self.n)])
+        self.agentPosition = np.array([1, 1])
         return self.agentPosition
 
     def render(self, mode='human'):

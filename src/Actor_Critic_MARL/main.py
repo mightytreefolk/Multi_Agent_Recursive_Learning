@@ -9,9 +9,9 @@ from models import FreeEnergyBarrier, Agent
 if __name__ == '__main__':
     X = 200
     Y = 200
-    LR = 0.003
-    GAMMA = 0.9
-    BATCH_SIZE = 30000
+    LR = 0.001
+    GAMMA = 0.99
+    BATCH_SIZE = 300000
     MAX_MEM = 300000
     NUMBER_OF_ACTIONS = 4
     EPSILON = 1.0
@@ -31,6 +31,7 @@ if __name__ == '__main__':
             observation_, reward, done, info = env.step(action)
             score += reward
             agent.store_transition(observation, action, reward, observation_, done)
+
             agent.learn()
             observation = observation_
             run.append(observation)
@@ -45,10 +46,10 @@ if __name__ == '__main__':
         df = pd.concat([df, x], axis=1)
         run.clear()
 
-        print(f"Episode: {i}",
-              f"Score: {score}",
-              f"Average score: {avg_score}",
-              f"Epsilon {agent.epsilon}")
+        print("Episode: ", i,
+              "Score: {}".format(score),
+              "Average score: {}".format(avg_score),
+              "Epsilon {}".format(agent.epsilon))
 
     timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     directory = "Dir_with_runs-{time}".format(time=timestamp)

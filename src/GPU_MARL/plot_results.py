@@ -27,10 +27,14 @@ def main():
     x = []
     y = []
     for i in columns:
-        for j in run_df[i]:
-            j = ast.literal_eval(j)
-            x.append(j[1])
-            y.append(j[0])
+        l = run_df[i].tolist()
+        for j in l:
+            if str(j) == 'nan':
+                break
+            else:
+                j = ast.literal_eval(j)
+                x.append(j[0])
+                y.append(j[1])
 
         run = go.Scatter(x=x, y=y)
         fig.add_trace(run)

@@ -9,10 +9,12 @@ def plot_run(dir):
     df = pd.read_csv(path, sep='\t')
     return df
 
+
 def plot_grid(dir):
     path = os.path.join(dir, "Grid.csv")
     df = pd.read_csv(path, sep='\t')
     return df.T
+
 
 def main():
     print("What directory would you like to explore?")
@@ -27,8 +29,8 @@ def main():
     for i in columns:
         for j in run_df[i]:
             j = ast.literal_eval(j)
-            x.append(j[0])
-            y.append(j[1])
+            x.append(j[1])
+            y.append(j[0])
 
         run = go.Scatter(x=x, y=y)
         fig.add_trace(run)
