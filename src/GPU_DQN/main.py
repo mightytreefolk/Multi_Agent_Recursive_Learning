@@ -10,7 +10,7 @@ if __name__ == '__main__':
     X = 200
     Y = 200
     LR = 0.003
-    GAMMA = 0.9
+    GAMMA = 0.95
     BATCH_SIZE = 30000
     MAX_MEM = 300000
     NUMBER_OF_ACTIONS = 4

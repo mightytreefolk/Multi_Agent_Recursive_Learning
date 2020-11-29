@@ -15,6 +15,10 @@ matplotlib = "*"
 pandas = "*"
 plotly = "*"
 scipy = "*"
+mdtraj = "*"
+cython = "*"
+box2d = "*"
+box2d-py = "*"
 
 [requires]
 python_version = "3.6"

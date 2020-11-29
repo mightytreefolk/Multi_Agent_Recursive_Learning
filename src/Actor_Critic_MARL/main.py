@@ -4,7 +4,8 @@ import uuid
 from datetime import datetime
 import os
 
-from models import FreeEnergyBarrier, Agent
+from .models.agent import Agent
+from .models.env import FreeEnergyBarrier
 
 if __name__ == '__main__':
     X = 200
